@@ -35,12 +35,12 @@ def update_progress(current, total):
 # Create the main application window
 root = tk.Tk()
 
-root.title("File Organizer")
+root.title("FileFlow - File Organizer")
 root.geometry("600x400")
 
 # Title
 
-title = tk.Label(root, text="File Organizer", font=("Helvetica", 16))
+title = tk.Label(root, text="FileFlow - File Organizer", font=("Helvetica", 16))
 title.pack(pady=10)
 
 # Select Folder Button
@@ -65,7 +65,7 @@ progress.pack(pady=10)
 
 # Status Label
 
-status_label = tk.Label(root, text="Ready")
+status_label = tk.Label(root, text="Ready to organize files.", font=("Helvetica", 12))
 status_label.pack()
 
 # Run the application
