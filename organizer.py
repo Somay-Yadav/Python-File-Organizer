@@ -3,11 +3,25 @@ import shutil
 import time
 import logging
 import json
+import sys
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
-CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
-LOG_PATH = os.path.join(BASE_DIR, 'file_organizer.log')
+    return os.path.join(base_path, relative_path)
+
+CONFIG_PATH = resource_path("config.json")
+
+# Save logs next to the executable when bundled
+if getattr(sys, "frozen", False):
+    LOG_PATH = os.path.join(os.path.dirname(sys.executable), "organizer.log")
+else:
+    LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "organizer.log")
 
 with open(CONFIG_PATH, "r") as file:
     file_types = json.load(file)
