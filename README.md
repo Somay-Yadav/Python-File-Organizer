@@ -32,7 +32,7 @@ Categories can easily be customized by editing `config.json`.
 ## 📸 Screenshot
 
 ```markdown
-![Python File Organizer](assets/screenshot.png)
+![Python-File-Organizer](assets/screenshot.png)
 ```
 
 ---
