@@ -1,6 +1,24 @@
-__pycache__
-*.pyc
-file_organizer.log
-dist/
+# Python
+__pycache__/
+*.py[cod]
+
+# Build
 build/
+dist/
+
+# Logs
+*.log
+
+# PyInstaller
 *.spec
+
+# VS Code
+.vscode/
+
+# Virtual Environment
+venv/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
