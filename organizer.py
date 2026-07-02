@@ -1,14 +1,36 @@
 import os
 import shutil
 import time
+import logging
+import json
 
-file_types = {
-    "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
-    "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
-    "Audio": [".mp3", ".wav", ".aac"],
-    "Videos": [".mp4", ".avi", ".mkv"],
-    "Applications": [".exe", ".msi", ".apk"],
-}
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
+LOG_PATH = os.path.join(BASE_DIR, 'file_organizer.log')
+
+with open(CONFIG_PATH, "r") as file:
+    file_types = json.load(file)
+
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
+
+def get_unique_filename(destination_folder, filename):
+
+    name, extension = os.path.splitext(filename)
+
+    counter = 1
+
+    new_filename = filename
+
+    while os.path.exists(os.path.join(destination_folder, new_filename)):
+        new_filename = f"{name} ({counter}){extension}"
+        counter += 1
+
+    return new_filename
 
 def organize_files(path, progress_callback=None):
 
@@ -34,13 +56,19 @@ def organize_files(path, progress_callback=None):
                     if not os.path.exists(folder_path):
                         os.makedirs(folder_path)
 
-                    shutil.move(file_path, folder_path)
-                    print(f"Moved {file} to {folder} folder.")
+                    unique_filename = get_unique_filename(folder_path, file)
+
+                    destination_path = os.path.join(folder_path, unique_filename)
+                    
+                    shutil.move(file_path, destination_path)
+
+                    logging.info(f"Moved '{file_path}' -> '{destination_path}'")
                     moved = True
                     break
                 
             if not moved:
                 print(f"No folder found for {file}.")
+                logging.info(f"No folder found for {file}.")
 
         if progress_callback:
             progress_callback(index, total_files)
