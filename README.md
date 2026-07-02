@@ -1,111 +1,133 @@
-# 📁 File Organizer
+# 📁 Python File Organizer
 
-A simple Python automation tool that automatically organizes files into different folders based on their file extensions.
+A desktop application built with Python and Tkinter that automatically organizes files into folders based on their file extensions.
 
 ## 🚀 Features
 
-* Automatically sorts files into categories
-* Creates folders automatically if they don't exist
-* Supports multiple file types:
+- 🖥️ Simple and user-friendly GUI
+- 📂 Select any folder using a folder picker
+- 📁 Automatically organize files by type
+- 📊 Live progress bar
+- 🔄 Duplicate file handling
+- 📝 File organization logs
+- ⚙️ Custom categories using `config.json`
+- 📦 Standalone Windows executable (.exe)
 
-  * Images
-  * Videos
-  * Documents
-  * Music
-  * Applications
-* Uses Python file handling and automation
+---
+
+## 📂 Supported Categories
+
+| Category | Extensions |
+|----------|------------|
+| Images | .jpg, .jpeg, .png, .gif, .bmp |
+| Documents | .pdf, .docx, .txt, .xlsx, .pptx |
+| Audio | .mp3, .wav, .aac |
+| Videos | .mp4, .avi, .mkv |
+| Applications | .exe, .msi, .apk |
+
+Categories can easily be customized by editing `config.json`.
+
+---
+
+## 📸 Screenshot
+
+
+![Python File Organizer](assets/screenshot.png)
+
+
+---
 
 ## 🛠️ Technologies Used
 
-* Python
-* os module
-* shutil module
+- Python 3
+- Tkinter
+- JSON
+- Logging
+- PyInstaller
 
-## 📂 Project Structure
+---
 
-```
-File-Organizer/
-│
-├── organizer.py
-├── README.md
-└── requirements.txt
-```
+## 📦 Installation
 
-## ⚙️ Installation & Setup
-
-1. Clone the repository:
+Clone the repository
 
 ```bash
-git clone <your-repository-link>
+git clone https://github.com/Somay-Yadav/Python-File-Organizer.git
 ```
 
-2. Open the project folder:
+Go to the project folder
 
 ```bash
 cd File-Organizer
 ```
 
-3. Install requirements:
+Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## ▶️ How to Run
-
-Run the program:
+Run the application
 
 ```bash
-python organizer.py
+python main.py
 ```
 
-Enter the folder path you want to organize.
+---
 
-Example:
-
-```
-Enter folder path: Downloads
-```
-
-The program will automatically create folders and move files.
-
-## 📌 Example
-
-Before:
+## 📁 Project Structure
 
 ```
-Downloads/
- ├── photo.png
- ├── movie.mp4
- ├── notes.pdf
- └── song.mp3
+File-Organizer/
+│
+├── main.py
+├── organizer.py
+├── config.json
+├── requirements.txt
+├── README.md
+├── .gitignore
+├── assets/
+│   └── screenshot.png
+└── organizer.log
 ```
 
-After:
+---
 
-```
-Downloads/
- ├── Images/
- │    └── photo.png
- ├── Videos/
- │    └── movie.mp4
- ├── Documents/
- │    └── notes.pdf
- └── Music/
-      └── song.mp3
+## 📦 Build Executable
+
+```bash
+python -m PyInstaller --onefile --windowed --name FileOrganizer --add-data "config.json;." main.py
 ```
 
-## 🔮 Future Improvements
+The executable will be available inside the `dist` folder.
 
-* Add GUI interface
-* Add duplicate file handling
-* Add file organization logs
-* Add custom categories
-* Add progress bar
-* Create executable application (.exe)
+---
 
-## 👨‍💻 Author
+## 🎯 Future Improvements (V3)
 
-**Somay Yadav**
+- 🎨 Modern UI (CustomTkinter)
+- 🌙 Dark Mode
+- 📊 File statistics
+- 🔍 Preview before organizing
+- ↩️ Undo last organization
+- 🖼️ Custom application icon
+- 💾 Remember last selected folder
+- 📂 Drag & Drop support
 
-⭐ If you like this project, consider giving it a star!
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome.
+
+Feel free to fork this project and improve it.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+Made with ❤️ using Python.
