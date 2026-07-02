@@ -1,39 +1,89 @@
 import os
 import shutil
+import time
+import logging
+import json
+import sys
 
-path = input("Enter the path of the folder you want to organize: ")
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
-file_types = {
-    "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
-    "Documents": [".pdf", ".docx", ".txt", ".xlsx", ".pptx"],
-    "Audio": [".mp3", ".wav", ".aac"],
-    "Videos": [".mp4", ".avi", ".mkv"],
-    "Applications": [".exe", ".msi", ".apk"],
-}
+    return os.path.join(base_path, relative_path)
 
-for file in os.listdir(path):
+CONFIG_PATH = resource_path("config.json")
 
-    file_path = os.path.join(path, file)
-    
-    if os.path.isfile(file_path):
+# Save logs next to the executable when bundled
+if getattr(sys, "frozen", False):
+    LOG_PATH = os.path.join(os.path.dirname(sys.executable), "organizer.log")
+else:
+    LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "organizer.log")
 
-        extension = os.path.splitext(file)[1].lower()
+with open(CONFIG_PATH, "r") as file:
+    file_types = json.load(file)
 
-        moved = False
+logging.basicConfig(
+    filename=LOG_PATH,
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
 
-        for folder, extensions in file_types.items():
+def get_unique_filename(destination_folder, filename):
 
-            if extension in extensions:
+    name, extension = os.path.splitext(filename)
 
-                folder_path = os.path.join(path,folder)
+    counter = 1
 
-                if not os.path.exists(folder_path):
-                    os.makedirs(folder_path)
+    new_filename = filename
 
-                shutil.move(file_path, folder_path)
-                print(f"Moved {file} to {folder} folder.")
-                moved = True
-                break
-            
-        if not moved:
-            print(f"No folder found for {file}.")
+    while os.path.exists(os.path.join(destination_folder, new_filename)):
+        new_filename = f"{name} ({counter}){extension}"
+        counter += 1
+
+    return new_filename
+
+def organize_files(path, progress_callback=None):
+
+    files = os.listdir(path)
+    total_files = len(files)
+
+    for index, file in enumerate(files, start=1):
+
+        file_path = os.path.join(path, file)
+        
+        if os.path.isfile(file_path):
+
+            extension = os.path.splitext(file)[1].lower()
+
+            moved = False
+
+            for folder, extensions in file_types.items():
+
+                if extension in extensions:
+
+                    folder_path = os.path.join(path,folder)
+
+                    if not os.path.exists(folder_path):
+                        os.makedirs(folder_path)
+
+                    unique_filename = get_unique_filename(folder_path, file)
+
+                    destination_path = os.path.join(folder_path, unique_filename)
+                    
+                    shutil.move(file_path, destination_path)
+
+                    logging.info(f"Moved '{file_path}' -> '{destination_path}'")
+                    moved = True
+                    break
+                
+            if not moved:
+                print(f"No folder found for {file}.")
+                logging.info(f"No folder found for {file}.")
+
+        if progress_callback:
+            progress_callback(index, total_files)
+            time.sleep(0.2)  # Simulate some processing time
