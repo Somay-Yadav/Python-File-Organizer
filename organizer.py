@@ -5,6 +5,9 @@ import logging
 import json
 import sys
 
+# Utility function to get the absolute path to a resource, works for both development and PyInstaller environments
+# This function checks if the script is running in a PyInstaller bundle (frozen) or in a normal Python environment. It returns the absolute path to the specified resource, ensuring that the application can access its resources correctly regardless of how it is executed.
+
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     if getattr(sys, 'frozen', False):
