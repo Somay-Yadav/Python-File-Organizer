@@ -2,33 +2,33 @@
 
 A simple Python automation tool that automatically organizes files into different folders based on their file extensions.
 
-## 🚀 Features
+## 🚀 Features 
 
-* Automatically sorts files into categories
-* Creates folders automatically if they don't exist
-* Supports multiple file types:
-
-  * Images
-  * Videos
-  * Documents
-  * Music
-  * Applications
-* Uses Python file handling and automation
+- 📁 Organize files by file type
+- 🖥️ Tkinter GUI interface
+- 📂 Select folder using file dialog
+- 📊 Live progress bar while organizing
+- 📦 Modular project structure
 
 ## 🛠️ Technologies Used
 
 * Python
 * os module
 * shutil module
+* tkinter module
+* time module
 
 ## 📂 Project Structure
 
 ```
 File-Organizer/
 │
+├── main.py
 ├── organizer.py
+├── requirements.txt
 ├── README.md
-└── requirements.txt
+├── .gitignore
+└── (other project files)
 ```
 
 ## ⚙️ Installation & Setup
@@ -36,7 +36,7 @@ File-Organizer/
 1. Clone the repository:
 
 ```bash
-git clone <your-repository-link>
+git clone https://github.com/Somay-Yadav/Python-File-Organizer.git
 ```
 
 2. Open the project folder:
@@ -97,11 +97,9 @@ Downloads/
 
 ## 🔮 Future Improvements
 
-* Add GUI interface
 * Add duplicate file handling
 * Add file organization logs
 * Add custom categories
-* Add progress bar
 * Create executable application (.exe)
 
 ## 👨‍💻 Author

@@ -1,7 +1,6 @@
 import os
 import shutil
-
-path = input("Enter the path of the folder you want to organize: ")
+import time
 
 file_types = {
     "Images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
@@ -11,29 +10,38 @@ file_types = {
     "Applications": [".exe", ".msi", ".apk"],
 }
 
-for file in os.listdir(path):
+def organize_files(path, progress_callback=None):
 
-    file_path = os.path.join(path, file)
-    
-    if os.path.isfile(file_path):
+    files = os.listdir(path)
+    total_files = len(files)
 
-        extension = os.path.splitext(file)[1].lower()
+    for index, file in enumerate(files, start=1):
 
-        moved = False
+        file_path = os.path.join(path, file)
+        
+        if os.path.isfile(file_path):
 
-        for folder, extensions in file_types.items():
+            extension = os.path.splitext(file)[1].lower()
 
-            if extension in extensions:
+            moved = False
 
-                folder_path = os.path.join(path,folder)
+            for folder, extensions in file_types.items():
 
-                if not os.path.exists(folder_path):
-                    os.makedirs(folder_path)
+                if extension in extensions:
 
-                shutil.move(file_path, folder_path)
-                print(f"Moved {file} to {folder} folder.")
-                moved = True
-                break
-            
-        if not moved:
-            print(f"No folder found for {file}.")
+                    folder_path = os.path.join(path,folder)
+
+                    if not os.path.exists(folder_path):
+                        os.makedirs(folder_path)
+
+                    shutil.move(file_path, folder_path)
+                    print(f"Moved {file} to {folder} folder.")
+                    moved = True
+                    break
+                
+            if not moved:
+                print(f"No folder found for {file}.")
+
+        if progress_callback:
+            progress_callback(index, total_files)
+            time.sleep(0.2)  # Simulate some processing time
