@@ -3,7 +3,130 @@ import customtkinter as ctk
 from ui.folder_card import FolderCard
 from ui.drag_drop_card import DragDropCard
 
+def format_size(size):
+    for unit in ["B", "KB", "MB", "GB"]:
+        if size < 1024:
+            return f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} TB"
+
 class Dashboard(ctk.CTkFrame):
+
+    def update_preview(self, files):
+
+        # Remove previous rows
+        for widget in self.preview_body.winfo_children():
+            widget.destroy()
+
+        # Update title
+        self.preview_title.configure(
+            text=f"Preview ({len(files)} files)"
+        )
+
+        self.total_files.configure(
+            text=str(len(files))
+        )
+
+        for index, file in enumerate(files):
+
+            row = ctk.CTkFrame(
+                self.preview_body,
+                fg_color="#222B3A" if index % 2 == 0 else "#1C2533",
+                corner_radius=8,
+                height=40
+            )
+
+            row.pack_propagate(False)
+
+            row.pack(
+                fill="x",
+                padx=5,
+                pady=4
+            )
+
+            row.grid_columnconfigure(0, minsize=500)
+            row.grid_columnconfigure(1, minsize=170)
+            row.grid_columnconfigure(2, minsize=120)
+
+            icons = {
+                "Image": "🖼️",
+                "Document": "📄",
+                "Video": "🎬",
+                "Audio": "🎵",
+                "Archive": "🗜️",
+                "Others": "📁"
+            }
+
+            name = file["name"]
+
+            if len(name) > 40:
+                name = name[:37] + "..."
+
+            # File name
+            ctk.CTkLabel(
+                row,
+                text=f"{icons.get(file['category'],'📁')}  {name}",
+                anchor="w",
+                justify="left",
+                font=("Segoe UI", 14),
+                width=350
+            ).grid(
+                row=0,
+                column=0,
+                sticky="w",
+                padx=(15,0)
+            )
+
+            badge_bg = {
+                "Image": "#163A29",
+                "Document": "#3D2B0B",
+                "Video": "#102C5A",
+                "Audio": "#34124F",
+                "Archive": "#4A2210",
+                "Others": "#303A4B"
+            }
+
+            badge_text = {
+                "Image": "#34D399",
+                "Document": "#FBBF24",
+                "Video": "#60A5FA",
+                "Audio": "#C084FC",
+                "Archive": "#FB923C",
+                "Others": "#94A3B8"
+            }
+
+            # Category (temporary)
+            badge = ctk.CTkFrame(
+                row,
+                fg_color=badge_bg.get(file["category"], "#475569"),
+                width=110,
+                height=28,
+                corner_radius=8
+            )
+
+            badge.grid(row=0, column=1)
+            badge.grid_propagate(False)
+
+            ctk.CTkLabel(
+                badge,
+                text=file["category"],
+                text_color=badge_text.get(file["category"], "#FFFFFF"),
+                font=("Segoe UI", 12, "bold"),
+                fg_color="transparent"
+            ).place(relx=0.5, rely=0.5, anchor="center")
+
+            # Size
+            ctk.CTkLabel(
+                row,
+                text=format_size(file["size"]),
+                font=("Segoe UI", 13)
+            ).grid(
+                row=0,
+                column=2,
+                padx=(0,15)
+            )
+
+            row.pack_propagate(False)
 
     def __init__(self, master):
         super().__init__(
@@ -27,7 +150,10 @@ class Dashboard(ctk.CTkFrame):
 
         # ---------- Folder Card ---------- #
 
-        self.folder_card = FolderCard(self)
+        self.folder_card = FolderCard(
+            self, 
+            dashboard=self
+        )
 
         self.folder_card.grid(
             row=0,
@@ -107,7 +233,7 @@ class Dashboard(ctk.CTkFrame):
         self.table_header = ctk.CTkFrame(
             self.preview_card,
             fg_color="#273246",
-            height=45,
+            height=50,
             corner_radius=10
         )
 
@@ -125,8 +251,9 @@ class Dashboard(ctk.CTkFrame):
         ctk.CTkLabel(
             self.table_header,
             text="File Name",
-            font=("Segoe UI",15,"bold")
-        ).grid(row=0,column=0,pady=10)
+            font=("Segoe UI",15,"bold"),
+            anchor="w"
+        ).grid(row=0,column=0, sticky="w",padx=20,pady=10)
 
         ctk.CTkLabel(
             self.table_header,
@@ -140,10 +267,10 @@ class Dashboard(ctk.CTkFrame):
             font=("Segoe UI",15,"bold")
         ).grid(row=0,column=2,pady=10)
 
-        self.preview_body = ctk.CTkFrame(
+        self.preview_body = ctk.CTkScrollableFrame(
             self.preview_card,
             fg_color="transparent",
-            height=320
+            corner_radius=0
         )
 
         self.preview_body.grid(

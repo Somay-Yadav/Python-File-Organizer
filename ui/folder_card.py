@@ -1,14 +1,18 @@
 import customtkinter as ctk
 
+from core.folder_manager import FolderManager
+from core.scanner import FileScanner
 
 class FolderCard(ctk.CTkFrame):
-    def __init__(self, master):
+    def __init__(self, master, dashboard):
         super().__init__(
             master,
             fg_color="#1B2434",
             corner_radius=18,
             height=220
         )
+
+        self.dashboard = dashboard
 
         self.grid_propagate(False)
 
@@ -56,6 +60,10 @@ class FolderCard(ctk.CTkFrame):
             font=("Segoe UI", 15, "bold")
         )
 
+        self.browse_button.configure(
+            command=self.select_folder
+        )
+
         self.browse_button.grid(
             row=0,
             column=1
@@ -80,3 +88,19 @@ class FolderCard(ctk.CTkFrame):
             padx=20,
             pady=(0, 18)
         )
+
+    def select_folder(self):
+
+        folder = FolderManager.browse_folder()
+
+        if not folder:
+            return
+
+        self.folder_entry.configure(state="normal")
+        self.folder_entry.delete(0, "end")
+        self.folder_entry.insert(0, folder)
+        self.folder_entry.configure(state="readonly")
+
+        files = FileScanner.scan(folder)
+
+        self.dashboard.update_preview(files)
