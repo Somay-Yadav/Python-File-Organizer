@@ -157,4 +157,3 @@ This project is released under the MIT License.
 
 ---
 
-Made with ❤️ by the community.
