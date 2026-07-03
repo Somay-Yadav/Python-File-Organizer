@@ -4,28 +4,26 @@ import time
 import logging
 import json
 import sys
+from pathlib import Path
 
-# Utility function to get the absolute path to a resource, works for both development and PyInstaller environments
-# This function checks if the script is running in a PyInstaller bundle (frozen) or in a normal Python environment. It returns the absolute path to the specified resource, ensuring that the application can access its resources correctly regardless of how it is executed.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     if getattr(sys, 'frozen', False):
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     else:
         base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
 
-CONFIG_PATH = resource_path("config.json")
+CONFIG_PATH = BASE_DIR / "data" / "settings.json"
 
 # Save logs next to the executable when bundled
 if getattr(sys, "frozen", False):
     LOG_PATH = os.path.join(os.path.dirname(sys.executable), "organizer.log")
 else:
-    LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "organizer.log")
-
+    LOG_PATH = BASE_DIR / "logs" / "organizer.log"
 with open(CONFIG_PATH, "r") as file:
     file_types = json.load(file)
 

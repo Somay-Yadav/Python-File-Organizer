@@ -1,7 +1,17 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
-import organizer
+# import core.organizer
 
+from ui.app import FileFlowApp
+
+def main():
+    app = FileFlowApp()
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()
+
+"""
 selected_folder = ""
 
 def select_folder():
@@ -21,7 +31,7 @@ def organize_files():
     
     progress['value'] = 0
 
-    organizer.organize_files(selected_folder, update_progress)
+    core.organizer.organize_files(selected_folder, update_progress)
 
     progress['value'] = 100
 
@@ -71,3 +81,4 @@ status_label.pack()
 # Run the application
 
 root.mainloop()
+"""
