@@ -48,7 +48,7 @@ class Sidebar(ctk.CTkFrame):
             "settings": load_white_icon(os.path.join(ICON_DIR, "settings.png")),
             "about": load_white_icon(os.path.join(ICON_DIR, "about.png")),
         }
-
+        self.app = master
         self.grid_propagate(False)
 
         self.grid_rowconfigure(0, weight=0) # Logo
@@ -59,6 +59,7 @@ class Sidebar(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
 
         self.build_ui()
+        self.update_last_operation_card()
 
     def build_ui(self):
 
@@ -116,48 +117,61 @@ class Sidebar(ctk.CTkFrame):
             padx = 18
         )
 
-        self.dashboard = self.create_button(
+        self.buttons = {}
+
+        self.dashboard_btn = self.create_button(
             nav,
             "Dashboard",
             self.icons["dashboard"],
+            command=lambda: self.app.show_page("dashboard"),
             active=True
         )
+        self.buttons["dashboard"] = self.dashboard_btn
 
-        self.preview = self.create_button(
+        self.preview_btn = self.create_button(
             nav,
             "Preview",
-            self.icons["preview"]
+            self.icons["preview"],
+            command=lambda: self.app.trigger_preview()
         )
 
-        self.organize = self.create_button(
+        self.organize_btn = self.create_button(
             nav,
             "Organize",
-            self.icons["organize"]
+            self.icons["organize"],
+            command=lambda: self.app.trigger_organize()
         )
 
-        self.statistics = self.create_button(
+        self.statistics_btn = self.create_button(
             nav,
             "Statistics",
-            self.icons["statistics"]
+            self.icons["statistics"],
+            command=lambda: self.app.show_page("statistics")
         )
+        self.buttons["statistics"] = self.statistics_btn
 
-        self.undo = self.create_button(
+        self.undo_btn = self.create_button(
             nav,
             "Undo",
-            self.icons["undo"]
+            self.icons["undo"],
+            command=lambda: self.app.trigger_undo()
         )
 
-        self.settings = self.create_button(
+        self.settings_btn = self.create_button(
             nav,
             "Settings",
-            self.icons["settings"]
+            self.icons["settings"],
+            command=lambda: self.app.show_page("settings")
         )
+        self.buttons["settings"] = self.settings_btn
 
-        self.about = self.create_button(
+        self.about_btn = self.create_button(
             nav,
             "About",
-            self.icons["about"]
+            self.icons["about"],
+            command=lambda: self.app.show_page("about")
         )
+        self.buttons["about"] = self.about_btn
 
         # ===========================
         # Last Operation Card
@@ -192,17 +206,22 @@ class Sidebar(ctk.CTkFrame):
             pady=(18, 5)
         )
 
-        ctk.CTkLabel(
+        self.last_op_status = ctk.CTkLabel(
             card,
             text="No recent activity",
-            font=("Segoe UI", 14),
-            text_color="#94A3B8"
-        ).pack(
+            font=("Segoe UI", 13),
+            text_color="#94A3B8",
+            justify="left",
             anchor="w",
-            padx=18
+            wraplength=200
+        )
+        self.last_op_status.pack(
+            anchor="w",
+            padx=18,
+            pady=(0, 5)
         )
 
-        ctk.CTkButton(
+        self.view_details_btn = ctk.CTkButton(
             card,
             text="View Details",
             font=("Segoe UI", 14, "bold"),
@@ -211,14 +230,59 @@ class Sidebar(ctk.CTkFrame):
             fg_color="#111827",
             border_width=1,
             border_color="#122B71",
-            hover_color="#1D4ED8"
-        ).pack(
+            hover_color="#1D4ED8",
+            command=self.view_last_op_details
+        )
+        self.view_details_btn.pack(
             fill="x",
             padx=18,
-            pady=18
+            pady=12
         )
 
-    def create_button(self, parent, text, icon, active=False):
+    def set_active_button(self, page_name):
+        for name, btn in self.buttons.items():
+            if name == page_name:
+                btn.configure(fg_color="#2563EB", hover_color="#122B71")
+            else:
+                btn.configure(fg_color="transparent", hover_color="#1E293B")
+
+    def update_last_operation_card(self):
+        from core.undo import get_last_operation
+        last_op = get_last_operation()
+        if not last_op:
+            self.last_op_status.configure(text="No recent activity")
+            return
+        
+        folder_name = os.path.basename(last_op["folder"])
+        if not folder_name:
+            folder_name = last_op["folder"]
+        
+        num_moved = len(last_op["moves"])
+        text = f"Folder: {folder_name}\nMoved: {num_moved} files\nTime: {last_op['timestamp']}"
+        self.last_op_status.configure(text=text)
+
+    def view_last_op_details(self):
+        from core.undo import get_last_operation
+        from tkinter import messagebox
+        last_op = get_last_operation()
+        if not last_op:
+            messagebox.showinfo("No Activity", "There is no recent activity to show details for.")
+            return
+        
+        details = f"Folder: {last_op['folder']}\n"
+        details += f"Time: {last_op['timestamp']}\n\n"
+        details += "Files Moved:\n"
+        for move in last_op["moves"][:15]:
+            src_name = os.path.basename(move["source"])
+            dest_cat = os.path.basename(os.path.dirname(move["destination"]))
+            details += f"• {src_name} -> {dest_cat}\n"
+        
+        if len(last_op["moves"]) > 15:
+            details += f"... and {len(last_op['moves']) - 15} more files."
+            
+        messagebox.showinfo("Last Operation Details", details)
+
+    def create_button(self, parent, text, icon, command=None, active=False):
 
         color = "#2563EB" if active else "transparent"
 
@@ -232,7 +296,8 @@ class Sidebar(ctk.CTkFrame):
             hover_color="#122B71" if active else "#1E293B",
             anchor="w",
             font=("Segoe UI", 18),
-            border_width=0
+            border_width=0,
+            command=command
         )
 
         button.pack(fill="x", pady=6)

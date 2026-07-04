@@ -22,8 +22,14 @@ def load_white_icon(path, size=(22, 22)):
 class ActionBar(ctk.CTkFrame):
 
     def preview(self):
-        print("Preview clicked")
-
+        folder = self.dashboard.folder_card.selected_folder
+        if folder:
+            self.dashboard.folder_card.load_folder(folder)
+        else:
+            messagebox.showwarning(
+                "No Folder Selected",
+                "Please select a folder first."
+            )
 
     def organize(self):
 
@@ -47,9 +53,20 @@ class ActionBar(ctk.CTkFrame):
         # Refresh dashboard
         self.dashboard.folder_card.load_folder(folder)
 
+        # Update sidebar last operation card
+        app = self.dashboard.master
+        while app and not hasattr(app, "refresh_last_operation"):
+            app = getattr(app, "master", None)
+        if app and hasattr(app, "refresh_last_operation"):
+            app.refresh_last_operation()
+
 
     def undo(self):
-        print("Undo clicked")
+        app = self.dashboard.master
+        while app and not hasattr(app, "trigger_undo"):
+            app = getattr(app, "master", None)
+        if app and hasattr(app, "trigger_undo"):
+            app.trigger_undo()
 
     def __init__(self, master, dashboard):
         super().__init__(

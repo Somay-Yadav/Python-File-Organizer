@@ -94,8 +94,26 @@ def organize_files(folder_path, progress_callback=None):
 
     moved_files = 0
     skipped_files = 0
+    moves = []
 
     for index, file_path in enumerate(files, start=1):
+        # Skip the running executable, the active log file, and the running script
+        try:
+            resolved_path = file_path.resolve()
+            is_exe = resolved_path == Path(sys.executable).resolve()
+            is_log = resolved_path == LOG_PATH.resolve()
+            is_script = False
+            if sys.argv:
+                is_script = resolved_path == Path(sys.argv[0]).resolve()
+            
+            if is_exe or is_log or is_script:
+                skipped_files += 1
+                logging.info(f"Skipped application file: {file_path}")
+                if progress_callback:
+                    progress_callback(index, total_files)
+                continue
+        except Exception as e:
+            logging.error(f"Error resolving path '{file_path}': {e}")
 
         extension = file_path.suffix.lower()
 
@@ -114,6 +132,35 @@ def organize_files(folder_path, progress_callback=None):
 
             destination_folder = folder_path / "Others"
 
+            try:
+                destination_folder.mkdir(exist_ok=True)
+
+                unique_name = get_unique_filename(
+                    destination_folder,
+                    file_path.name
+                )
+
+                destination = destination_folder / unique_name
+
+                shutil.move(str(file_path), str(destination))
+
+                moved_files += 1
+                moves.append({"source": str(file_path), "destination": str(destination)})
+
+                logging.info(
+                    f"Moved '{file_path}' -> '{destination}' (Others)"
+                )
+            except Exception as e:
+                skipped_files += 1
+                logging.error(f"Failed to move '{file_path}' to Others: {e}")
+
+            if progress_callback:
+                progress_callback(index, total_files)
+
+            continue
+
+        # Create folder if needed
+        try:
             destination_folder.mkdir(exist_ok=True)
 
             unique_name = get_unique_filename(
@@ -126,36 +173,21 @@ def organize_files(folder_path, progress_callback=None):
             shutil.move(str(file_path), str(destination))
 
             moved_files += 1
+            moves.append({"source": str(file_path), "destination": str(destination)})
 
             logging.info(
-                f"Moved '{file_path}' -> '{destination}' (Others)"
+                f"Moved '{file_path}' -> '{destination}'"
             )
-
-            if progress_callback:
-                progress_callback(index, total_files)
-
-            continue
-
-        # Create folder if needed
-        destination_folder.mkdir(exist_ok=True)
-
-        unique_name = get_unique_filename(
-            destination_folder,
-            file_path.name
-        )
-
-        destination = destination_folder / unique_name
-
-        shutil.move(str(file_path), str(destination))
-
-        moved_files += 1
-
-        logging.info(
-            f"Moved '{file_path}' -> '{destination}'"
-        )
+        except Exception as e:
+            skipped_files += 1
+            logging.error(f"Failed to move '{file_path}' to '{destination_folder}': {e}")
 
         if progress_callback:
             progress_callback(index, total_files)
+
+    if moves:
+        from core.undo import save_operation
+        save_operation(folder_path, moves)
 
     return {
         "moved": moved_files,

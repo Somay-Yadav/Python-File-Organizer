@@ -9,8 +9,9 @@ class FolderCard(ctk.CTkFrame):
             master,
             fg_color="transparent",
             corner_radius=18,
-            height=140
+            height=100
         )
+        self.grid_propagate(False)
 
         self.dashboard = dashboard
 
@@ -74,6 +75,8 @@ class FolderCard(ctk.CTkFrame):
             corner_radius=10,
             height=46
         )
+        self.folder_entry.grid_propagate(False)
+        self.folder_entry.grid_rowconfigure(0, weight=1)
 
         self.folder_entry.grid(
             row=0,
@@ -97,7 +100,7 @@ class FolderCard(ctk.CTkFrame):
             row=0,
             column=0,
             padx=(15,8),
-            pady=10
+            pady=0
         )
 
         self.path_label = ctk.CTkLabel(

@@ -38,21 +38,14 @@ class Dashboard(ctk.CTkFrame):
             "Others": 0
         }
 
-        mapping = {
-            "Image": "Images",
-            "Document": "Documents",
-            "Video": "Videos",
-            "Audio": "Audio",
-            "Archive": "Archives",
-            "Application": "Applications",
-            "Others": "Others"
-        }
-
         total_size = 0
 
         for f in files:
-            category = mapping.get(f["category"], "Others")
-            counts[category] += 1
+            category = f["category"]
+            if category in counts:
+                counts[category] += 1
+            else:
+                counts["Others"] += 1
             total_size += f["size"]
 
         for category, label in self.stat_labels.items():
@@ -94,12 +87,13 @@ class Dashboard(ctk.CTkFrame):
 
         self.ax.clear()
 
-        self.ax.pie(
-            values,
-            colors=colors,
-            startangle=90,
-            wedgeprops=dict(width=0.38, edgecolor="#1B2434")
-        )
+        if sum(values) > 0:
+            self.ax.pie(
+                values,
+                colors=colors,
+                startangle=90,
+                wedgeprops=dict(width=0.38, edgecolor="#1B2434")
+            )
 
         self.ax.set_aspect("equal")
         self.ax.set_facecolor("#1B2434")
@@ -130,17 +124,17 @@ class Dashboard(ctk.CTkFrame):
                 corner_radius=0
             ).pack(fill="x")
 
-            row.grid_columnconfigure(0, minsize=500)
-            row.grid_columnconfigure(1, minsize=170)
+            row.grid_columnconfigure(0, weight=3)
+            row.grid_columnconfigure(1, weight=2)
             row.grid_columnconfigure(2, weight=1)
 
             icons = {
-                "Image": "🖼️",
-                "Document": "📄",
-                "Video": "🎬",
+                "Images": "🖼️",
+                "Documents": "📄",
+                "Videos": "🎬",
                 "Audio": "🎵",
-                "Archive": "🗜️",
-                "Application": "🖥️",
+                "Archives": "🗜️",
+                "Applications": "🖥️",
                 "Others": "📁"
             }
 
@@ -155,32 +149,31 @@ class Dashboard(ctk.CTkFrame):
                 text=f"{icons.get(file['category'],'📁')}  {name}",
                 anchor="w",
                 justify="left",
-                font=("Segoe UI", 14),
-                width=350
+                font=("Segoe UI", 14)
             ).grid(
                 row=0,
                 column=0,
-                sticky="w",
+                sticky="we",
                 padx=(18,10)
             )
 
             badge_bg = {
-                "Image": "#163A29",
-                "Document": "#3D2B0B",
-                "Video": "#102C5A",
+                "Images": "#163A29",
+                "Documents": "#3D2B0B",
+                "Videos": "#102C5A",
                 "Audio": "#34124F",
-                "Archive": "#4A2210",
-                "Application": "#4A1E1E",
+                "Archives": "#4A2210",
+                "Applications": "#4A1E1E",
                 "Others": "#303A4B"
             }
 
             badge_text = {
-                "Image": "#34D399",
-                "Document": "#FBBF24",
-                "Video": "#60A5FA",
+                "Images": "#34D399",
+                "Documents": "#FBBF24",
+                "Videos": "#60A5FA",
                 "Audio": "#C084FC",
-                "Archive": "#FB923C",
-                "Application": "#EF4444",
+                "Archives": "#FB923C",
+                "Applications": "#EF4444",
                 "Others": "#94A3B8"
             }
 
@@ -226,7 +219,7 @@ class Dashboard(ctk.CTkFrame):
             fg_color="#0E1117"
         )
 
-        self.grid_rowconfigure(0, minsize=105)
+        self.grid_rowconfigure(0, minsize=145)
         self.grid_rowconfigure(1, minsize=180)
         self.grid_rowconfigure(2, weight=1)
 
@@ -470,6 +463,8 @@ class Dashboard(ctk.CTkFrame):
         )
 
         self.ax = self.figure.add_subplot(111)
+        self.ax.set_facecolor("#1B2434")
+        self.ax.axis("off")
 
         self.canvas = FigureCanvasTkAgg(
             self.figure,
