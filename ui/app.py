@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from ui.sidebar import Sidebar
 from ui.dashboard import Dashboard
+from pathlib import Path
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -10,6 +11,13 @@ class FileFlowApp(ctk.CTk):
 
     def __init__(self):
         super().__init__()
+
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        self.after(
+            100,
+            lambda: self.iconbitmap(BASE_DIR / "assets" / "icon.ico")
+        )
 
         self.title("FileFlow - File Organizer")
         self.geometry("1400x850")

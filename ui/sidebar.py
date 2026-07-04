@@ -33,6 +33,12 @@ class Sidebar(ctk.CTkFrame):
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         ICON_DIR = os.path.join(BASE_DIR, "assets", "icons")
 
+        self.logo = ctk.CTkImage(
+            light_image=Image.open(Path(BASE_DIR) / "assets" / "logo.png"),
+            dark_image=Image.open(Path(BASE_DIR) / "assets" / "logo.png"),
+            size=(46, 46)
+        )
+
         self.icons = {
             "dashboard": load_white_icon(os.path.join(ICON_DIR, "dashboard.png")),
             "preview": load_white_icon(os.path.join(ICON_DIR, "preview.png")),
@@ -75,7 +81,9 @@ class Sidebar(ctk.CTkFrame):
 
         title = ctk.CTkLabel(
             logo_frame,
-            text="📂 FileFlow",
+            image=self.logo,
+            text="  FileFlow",
+            compound="left",
             font=("Segoe UI", 30, "bold"),
             anchor="w"
         )
