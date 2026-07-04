@@ -9,7 +9,7 @@ class DragDropCard(ctk.CTkFrame):
             corner_radius=15,
             border_width=1,
             border_color="#30363D",
-            height=150
+            height=130
         )
         
         self.grid_propagate(False)
@@ -19,15 +19,15 @@ class DragDropCard(ctk.CTkFrame):
         self.icon = ctk.CTkLabel(
             self,
             text="☁",
-            font=("Segoe UI Emoji", 42),
+            font=("Segoe UI Emoji", 34),
             text_color="#8B949E"
         )
-        self.icon.grid(row=0, column=0, pady=(25, 5))
+        self.icon.grid(row=0, column=0, pady=(14, 3))
 
         self.title = ctk.CTkLabel(
             self,
             text="Drag & Drop a Folder Here",
-            font=("Segoe UI", 20, "bold"),
+            font=("Segoe UI", 18, "bold"),
             text_color="white"
         )
         self.title.grid(row=1, column=0)
@@ -35,7 +35,7 @@ class DragDropCard(ctk.CTkFrame):
         self.subtitle = ctk.CTkLabel(
             self,
             text="or click Browse Folder to select",
-            font=("Segoe UI", 14),
+            font=("Segoe UI", 13),
             text_color="#8B949E"
         )
         self.subtitle.grid(row=2, column=0, pady=(5, 25))

@@ -1,44 +1,61 @@
 import os
 import shutil
-import time
 import logging
 import json
 import sys
 from pathlib import Path
 
+# ==========================
+# Paths
+# ==========================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    if getattr(sys, 'frozen', False):
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.dirname(os.path.abspath(__file__))
-
-    return os.path.join(base_path, relative_path)
 
 CONFIG_PATH = BASE_DIR / "data" / "settings.json"
 
-# Save logs next to the executable when bundled
 if getattr(sys, "frozen", False):
-    LOG_PATH = os.path.join(os.path.dirname(sys.executable), "organizer.log")
+    LOG_PATH = Path(sys.executable).parent / "organizer.log"
 else:
     LOG_PATH = BASE_DIR / "logs" / "organizer.log"
-with open(CONFIG_PATH, "r") as file:
-    file_types = json.load(file)
+
+LOG_PATH.parent.mkdir(exist_ok=True)
+
+# ==========================
+# Load Settings
+# ==========================
+
+try:
+    with open(CONFIG_PATH, "r") as file:
+        FILE_TYPES = json.load(file)
+except (FileNotFoundError, json.JSONDecodeError):
+    FILE_TYPES = {}
+
+# ==========================
+# Logger
+# ==========================
 
 logging.basicConfig(
     filename=LOG_PATH,
     level=logging.INFO,
-    format='%(asctime)s - %(message)s'
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
+# ==========================
+# Helper Functions
+# ==========================
+
 def get_unique_filename(destination_folder, filename):
+    """
+    Returns a unique filename if a duplicate exists.
+    Example:
+        photo.png
+        photo (1).png
+        photo (2).png
+    """
 
     name, extension = os.path.splitext(filename)
 
     counter = 1
-
     new_filename = filename
 
     while os.path.exists(os.path.join(destination_folder, new_filename)):
@@ -47,44 +64,101 @@ def get_unique_filename(destination_folder, filename):
 
     return new_filename
 
-def organize_files(path, progress_callback=None):
 
-    files = os.listdir(path)
+# ==========================
+# Main Organizer
+# ==========================
+
+def organize_files(folder_path, progress_callback=None):
+    """
+    Organizes files inside the selected folder.
+
+    Returns:
+    {
+        "moved": int,
+        "skipped": int,
+        "total": int
+    }
+    """
+
+    folder_path = Path(folder_path)
+
+    if not folder_path.exists():
+        raise FileNotFoundError(folder_path)
+
+    items = list(folder_path.iterdir())
+
+    files = [item for item in items if item.is_file()]
+
     total_files = len(files)
 
-    for index, file in enumerate(files, start=1):
+    moved_files = 0
+    skipped_files = 0
 
-        file_path = os.path.join(path, file)
-        
-        if os.path.isfile(file_path):
+    for index, file_path in enumerate(files, start=1):
 
-            extension = os.path.splitext(file)[1].lower()
+        extension = file_path.suffix.lower()
 
-            moved = False
+        destination_folder = None
 
-            for folder, extensions in file_types.items():
+        # Find matching category
+        for folder_name, extensions in FILE_TYPES.items():
 
-                if extension in extensions:
+            if extension in extensions:
+                destination_folder = folder_path / folder_name
+                break
 
-                    folder_path = os.path.join(path,folder)
+        # Skip unsupported files
+        # Move unknown files to Others
+        if destination_folder is None:
 
-                    if not os.path.exists(folder_path):
-                        os.makedirs(folder_path)
+            destination_folder = folder_path / "Others"
 
-                    unique_filename = get_unique_filename(folder_path, file)
+            destination_folder.mkdir(exist_ok=True)
 
-                    destination_path = os.path.join(folder_path, unique_filename)
-                    
-                    shutil.move(file_path, destination_path)
+            unique_name = get_unique_filename(
+                destination_folder,
+                file_path.name
+            )
 
-                    logging.info(f"Moved '{file_path}' -> '{destination_path}'")
-                    moved = True
-                    break
-                
-            if not moved:
-                print(f"No folder found for {file}.")
-                logging.info(f"No folder found for {file}.")
+            destination = destination_folder / unique_name
+
+            shutil.move(str(file_path), str(destination))
+
+            moved_files += 1
+
+            logging.info(
+                f"Moved '{file_path}' -> '{destination}' (Others)"
+            )
+
+            if progress_callback:
+                progress_callback(index, total_files)
+
+            continue
+
+        # Create folder if needed
+        destination_folder.mkdir(exist_ok=True)
+
+        unique_name = get_unique_filename(
+            destination_folder,
+            file_path.name
+        )
+
+        destination = destination_folder / unique_name
+
+        shutil.move(str(file_path), str(destination))
+
+        moved_files += 1
+
+        logging.info(
+            f"Moved '{file_path}' -> '{destination}'"
+        )
 
         if progress_callback:
             progress_callback(index, total_files)
-            time.sleep(0.2)  # Simulate some processing time
+
+    return {
+        "moved": moved_files,
+        "skipped": skipped_files,
+        "total": total_files
+    }
