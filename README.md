@@ -1,70 +1,117 @@
-# 📁 Python File Organizer
+# 📂 FileFlow
 
-A polished desktop tool that organizes files into folders by extension — simple, fast, and configurable.
+> A modern desktop application to organize messy folders in seconds.
 
-![Hero screenshot](assets/screenshot.png)
+![Python](https://img.shields.io/badge/Python-3.14-blue?logo=python)
+![CustomTkinter](https://img.shields.io/badge/CustomTkinter-GUI-1f6feb)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Release](https://img.shields.io/badge/Release-v3.0.0-orange)
 
 ---
 
-**Quick links:** [Releases](https://github.com/Somay-Yadav/Python-File-Organizer/releases) • [Download ZIP (main)](https://github.com/Somay-Yadav/Python-File-Organizer/archive/refs/heads/main.zip)
+## ✨ Overview
 
----
+FileFlow automatically organizes files into neatly categorized folders with a modern desktop interface.
 
-**Badges:**
+Simply choose a folder, preview your files, and organize everything with a single click.
 
-- ![Made with Python](https://img.shields.io/badge/Made%20with-Python-3.10-blue)
-- ![License: MIT](https://img.shields.io/badge/License-MIT-green)
+Perfect for Downloads, Desktop, Documents, USB drives, and other cluttered folders.
 
 ---
 
 ## 🚀 Features
 
-- **Intuitive GUI:** Lightweight Tkinter interface for easy folder selection.
-- **Automatic sorting:** Files moved into categorized folders by extension.
-- **Progress tracking:** Live progress bar and logs for transparency.
-- **Duplicate handling:** Safe renaming strategy to avoid data loss.
-- **Custom categories:** Edit `config.json` to add/remove types.
-- **Windows friendly:** Build a single-file executable with `PyInstaller`.
+- 🎨 Modern CustomTkinter UI
+- 📂 Folder Browser
+- 👀 Live File Preview
+- 📊 Dashboard Statistics
+- ⚡ One-Click Organization
+- 📁 Automatic Category Creation
+- 💻 Applications (.exe) Support
+- 📦 Others Folder for Unknown Files
+- 🔁 Automatic Duplicate File Renaming
+- 📝 Logging System
+- 🖼️ Custom App Icon
+- 🪟 Windows Executable (.exe)
 
 ---
 
-## 📂 Supported Categories (default)
+## 📁 Categories
 
-| Category | Extensions |
-|---|---|
-| Images | .jpg, .jpeg, .png, .gif, .bmp |
-| Documents | .pdf, .docx, .txt, .xlsx, .pptx |
-| Audio | .mp3, .wav, .aac |
-| Videos | .mp4, .avi, .mkv |
-| Applications | .exe, .msi, .apk |
+FileFlow currently organizes files into:
 
-You can customize these by editing `config.json`.
+- 🖼 Images
+- 📄 Documents
+- 🎥 Videos
+- 🎵 Audio
+- 📦 Archives
+- 💻 Applications
+- 📂 Others
 
 ---
 
-## ⚙️ Installation
+## 🖥️ Screenshots
 
-Clone the repository:
+### Dashboard
+
+> *(Add your latest dashboard screenshot here.)*
+
+```
+assets/screenshots/dashboard.png
+```
+
+### Preview
+
+```
+assets/screenshots/preview.png
+```
+
+### Organize
+
+```
+assets/screenshots/organize.png
+```
+
+---
+
+## 📦 Installation
+
+### Option 1 — Download Release
+
+Download the latest executable from the GitHub Releases page.
+
+Run:
+
+```
+FileFlow.exe
+```
+
+No installation required.
+
+---
+
+### Option 2 — Run from Source
+
+Clone the repository
 
 ```bash
 git clone https://github.com/Somay-Yadav/Python-File-Organizer.git
 ```
 
-Change into the project directory:
+Go into the project
 
 ```bash
 cd Python-File-Organizer
 ```
 
-Create a virtual environment and install dependencies:
+Install dependencies
 
 ```bash
-python -m venv .venv
-source .venv/Scripts/activate   # Windows: .venv\\Scripts\\activate
 pip install -r requirements.txt
 ```
 
-Run the app:
+Run
 
 ```bash
 python main.py
@@ -72,88 +119,94 @@ python main.py
 
 ---
 
-## 🧭 Project Structure
+## 🛠 Built With
+
+- Python
+- CustomTkinter
+- Pillow
+- PyInstaller
+
+---
+
+## 📂 Project Structure
 
 ```
-Python-File-Organizer/
-├── main.py            # app entry
-├── organizer.py       # core organizing logic
-├── config.json        # custom categories
+FileFlow/
+│
+├── assets/
+│   ├── icons/
+│   └── screenshots/
+│
+├── core/
+│
+├── data/
+│
+├── logs/
+│
+├── ui/
+│
+├── main.py
 ├── requirements.txt
-├── README.md
-├── assets/            # screenshots and icons
-└── organizer.log      # runtime log (generated)
+└── README.md
 ```
 
 ---
 
-## 🛠️ Build a Windows Executable
+## 🗺️ Roadmap
 
-Build a single-file GUI executable using `PyInstaller`:
+### ✅ Version 1
+- Basic file organizer
+- Category folders
+- Logging
 
-```bash
-python -m PyInstaller --onefile --windowed --name FileOrganizer --add-data "config.json;." main.py
-```
+### ✅ Version 2
+- Improved project structure
+- Better file management
+- Settings support
 
-The `dist` folder will contain `FileOrganizer.exe`.
+### ✅ Version 3
+- Modern desktop UI
+- Dashboard
+- Statistics cards
+- Preview page
+- Applications category
+- Others category
+- Windows executable
 
----
+### 🔜 Planned for Version 4
 
-## 📥 Releases & Direct Downloads
-
-- Branch ZIP (latest main): https://github.com/Somay-Yadav/Python-File-Organizer/archive/refs/heads/main.zip
-- Releases page: https://github.com/Somay-Yadav/Python-File-Organizer/releases
-
-If the project has a release asset, the direct download usually looks like:
-
-```
-https://github.com/Somay-Yadav/Python-File-Organizer/releases/download/<tag>/<asset-filename>
-```
-
----
-
-## 🔌 API: Check latest release (example)
-
-Use this minimal Node.js/Express snippet to fetch latest release assets and download URLs via GitHub API.
-
-```javascript
-const express = require('express');
-const axios = require('axios');
-const app = express();
-
-app.get('/api/check-download', async (req, res) => {
-	try {
-		const owner = 'Somay-Yadav';
-		const repo = 'Python-File-Organizer';
-		const r = await axios.get(`https://api.github.com/repos/${owner}/${repo}/releases/latest`, {
-			headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'node.js' }
-		});
-		const release = r.data;
-		if (!release.assets || release.assets.length === 0) return res.json({ success: false, message: 'No assets found' });
-		const assets = release.assets.map(a => ({ name: a.name, size: a.size, url: a.browser_download_url }));
-		res.json({ success: true, tag: release.tag_name, name: release.name, assets });
-	} catch (err) {
-		res.status(500).json({ success: false, message: err.message });
-	}
-});
-
-app.listen(3000, () => console.log('API running on http://localhost:3000'));
-```
-
-Use `GET /api/check-download` to retrieve latest release assets and direct download links.
+- ↩ Undo Organization
+- 🎨 Custom Categories
+- 📊 Statistics Page
+- ⚙ Settings Page
+- 🌙 Theme Support
+- 📜 Operation History
+- 📈 Charts & Analytics
+- 🖱 Native Drag & Drop
 
 ---
 
-## ✅ Contributing
+## 🤝 Contributing
 
-- Fork the repo, open a feature branch, and submit a PR.
-- Add tests or a small demo when you add features.
+Contributions, suggestions, and feature requests are welcome.
+
+If you find a bug or have an idea, feel free to open an issue or submit a pull request.
 
 ---
 
 ## 📄 License
 
-This project is released under the MIT License.
+This project is licensed under the MIT License.
 
 ---
 
+## 👨‍💻 Author
+
+**Somay Yadav**
+
+GitHub:
+https://github.com/Somay-Yadav
+
+---
+
+⭐ If you found this project useful, consider giving it a star!
